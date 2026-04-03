@@ -65,6 +65,8 @@ Run `setup.sh` on the production server. It builds the app, configures Nginx wit
 
 ## Integration
 
+Hosted at `https://dndbookshelf.swensenfamily.local` in production.
+
 This app provides an export API (`GET /api/campaigns/{slug}/export`) used by [rpgdashboard](https://github.com/Gurfuzle/rpgdashboard) to import campaigns, characters, sessions, and notes.
 
 ## Claude CLI Commands

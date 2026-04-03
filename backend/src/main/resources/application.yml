@@ -3,5 +3,5 @@ server:
 
 app:
   campaigns-path: ../campaigns
-  bookshelf-url: https://dndstorybook.swensenfamily.local
+  bookshelf-url: https://dndbookshelf.swensenfamily.local
   rpgdashboard-url: https://rpgdashboard.swensenfamily.local

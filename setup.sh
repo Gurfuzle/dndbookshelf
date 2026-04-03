@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.12"
 BACKEND_PORT="8024"
-HOSTNAME="dndstorybook.swensenfamily.local"
+HOSTNAME="dndbookshelf.swensenfamily.local"
 
 echo "========================================="
 echo "  D&D Storybook – Server Setup (Ubuntu)"
@@ -102,7 +102,7 @@ SSL_CERT="${SSL_DIR}/cert.pem"
 SSL_KEY="${SSL_DIR}/key.pem"
 
 echo "[5/6] Configuring Nginx..."
-sudo tee /etc/nginx/sites-available/dndstorybook > /dev/null <<EOF
+sudo tee /etc/nginx/sites-available/dndbookshelf > /dev/null <<EOF
 # D&D Storybook – HTTPS
 server {
     listen 443 ssl;
@@ -133,7 +133,7 @@ server {
 }
 EOF
 
-sudo ln -sf /etc/nginx/sites-available/dndstorybook /etc/nginx/sites-enabled/dndstorybook
+sudo ln -sf /etc/nginx/sites-available/dndbookshelf /etc/nginx/sites-enabled/dndbookshelf
 sudo nginx -t
 
 # Ensure nginx can traverse the directory tree
@@ -148,7 +148,7 @@ done
 echo "[6/6] Creating systemd service..."
 BACKEND_JAR=$(ls -1 "$SCRIPT_DIR/backend/build/libs"/*.jar | grep -v plain | head -1)
 
-sudo tee /etc/systemd/system/dndstorybook.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/dndbookshelf.service > /dev/null <<EOF
 [Unit]
 Description=D&D Storybook Backend
 After=network.target
@@ -174,8 +174,8 @@ sudo systemctl daemon-reload
 echo
 echo "Starting services..."
 
-sudo systemctl enable dndstorybook
-sudo systemctl restart dndstorybook
+sudo systemctl enable dndbookshelf
+sudo systemctl restart dndbookshelf
 
 echo -n "  Waiting for backend"
 for i in $(seq 1 30); do
@@ -196,7 +196,7 @@ echo "========================================="
 echo "  Setup complete – all services running!"
 echo "========================================="
 echo
-echo "  Backend  →  localhost:${BACKEND_PORT} (systemd: dndstorybook)"
+echo "  Backend  →  localhost:${BACKEND_PORT} (systemd: dndbookshelf)"
 echo "  Nginx    →  port 443 (HTTPS)"
 echo
 echo "Access the app:"
@@ -211,7 +211,7 @@ echo
 echo "───────────────────────────────────────────────────────────"
 echo
 echo "Useful commands:"
-echo "  sudo systemctl status dndstorybook    # backend status"
-echo "  sudo journalctl -u dndstorybook -f    # tail backend logs"
-echo "  sudo systemctl restart dndstorybook   # restart backend"
+echo "  sudo systemctl status dndbookshelf    # backend status"
+echo "  sudo journalctl -u dndbookshelf -f    # tail backend logs"
+echo "  sudo systemctl restart dndbookshelf   # restart backend"
 echo
