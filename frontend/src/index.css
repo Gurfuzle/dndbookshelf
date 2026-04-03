@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-parchment: #f4e4c1;
+  --color-parchment-light: #faf3e3;
+  --color-parchment-dark: #e8d5a3;
+  --color-leather: #4a3728;
+  --color-leather-light: #6b5344;
+  --color-ink: #2c1810;
+  --color-ink-light: #5c4033;
+  --color-gold-accent: #c8a951;
+  --color-gold-dark: #a08030;
+  --color-castle-stone: #8b8680;
+  --color-castle-dark: #3d3a36;
+
+  --font-serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--color-castle-dark);
+  color: var(--color-ink);
+}
+
+/* Fantasy-themed prose overrides */
+.prose-fantasy {
+  --tw-prose-body: var(--color-ink);
+  --tw-prose-headings: var(--color-leather);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-links: var(--color-gold-dark);
+  --tw-prose-counters: var(--color-leather-light);
+  --tw-prose-bullets: var(--color-leather-light);
+  --tw-prose-hr: var(--color-parchment-dark);
+  --tw-prose-quotes: var(--color-ink-light);
+  --tw-prose-quote-borders: var(--color-gold-accent);
+  --tw-prose-th-borders: var(--color-parchment-dark);
+  --tw-prose-td-borders: var(--color-parchment-dark);
+}
+
+.prose-fantasy h1,
+.prose-fantasy h2,
+.prose-fantasy h3 {
+  font-family: var(--font-serif);
+}
+
+.prose-fantasy hr {
+  border-color: var(--color-parchment-dark);
+  border-style: solid;
+  opacity: 0.6;
+}
+
+.prose-fantasy table {
+  font-size: 0.9em;
+}
+
+.prose-fantasy th {
+  background-color: var(--color-parchment-dark);
+  color: var(--color-leather);
+  font-weight: 600;
+}
+
+.prose-fantasy td,
+.prose-fantasy th {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-parchment-dark);
+}
+
+/* Scrollbar styling for the book reader */
+.book-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.book-scroll::-webkit-scrollbar-track {
+  background: var(--color-parchment-dark);
+  border-radius: 5px;
+}
+
+.book-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-leather-light);
+  border-radius: 5px;
+}
+
+.book-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-leather);
+}

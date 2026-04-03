@@ -1,0 +1,7 @@
+server:
+  port: 8024
+
+app:
+  campaigns-path: ../campaigns
+  bookshelf-url: https://dndstorybook.swensenfamily.local
+  rpgdashboard-url: https://rpgdashboard.swensenfamily.local
