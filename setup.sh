@@ -16,7 +16,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.12"
-BACKEND_PORT="8024"
+BACKEND_PORT="8025"
 HOSTNAME="dndbookshelf.swensenfamily.local"
 
 echo "========================================="
