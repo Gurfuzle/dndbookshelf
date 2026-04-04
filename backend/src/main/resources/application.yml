@@ -1,5 +1,5 @@
 server:
-  port: 8024
+  port: 8025
 
 app:
   campaigns-path: ../campaigns
