@@ -4,5 +4,6 @@ public record ExportCharacter(
         String name,
         String playerName,
         String raceClass,
-        String background
+        String background,
+        String imageUrl
 ) {}

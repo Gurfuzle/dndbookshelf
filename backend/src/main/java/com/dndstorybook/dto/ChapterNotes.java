@@ -1,6 +1,7 @@
 package com.dndstorybook.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public record ChapterNotes(
         String chapterFilename,
@@ -11,5 +12,7 @@ public record ChapterNotes(
         List<String> npcsPresent,
         List<String> notableEvents,
         List<String> items,
-        String cliffhanger
+        String cliffhanger,
+        Map<String, CharacterNote> characterNotes,
+        DmNotes dmNotes
 ) {}

@@ -6,7 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +30,7 @@ public class CampaignService {
 
     private static final Pattern SLUG_PATTERN = Pattern.compile("^[a-z0-9-]+$");
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^[a-z0-9-]+\\.md$");
+    private static final Pattern IMAGE_FILENAME_PATTERN = Pattern.compile("^[a-z0-9-]+\\.(png|jpg|jpeg|webp)$");
     private static final Pattern TITLE_PATTERN = Pattern.compile("^#\\s+(.+)$", Pattern.MULTILINE);
     private static final Pattern DATE_PATTERN = Pattern.compile("\\*Session played (.+?)\\*");
     private static final Pattern CHARACTER_HEADING = Pattern.compile("^### (.+)$", Pattern.MULTILINE);
@@ -129,6 +138,33 @@ public class CampaignService {
         }
     }
 
+    public ResponseEntity<Resource> getCharacterImage(String slug, String filename) {
+        validateSlug(slug);
+        if (filename == null || !IMAGE_FILENAME_PATTERN.matcher(filename).matches()) {
+            throw new IllegalArgumentException("Invalid image filename: " + filename);
+        }
+
+        Path imagePath = campaignsPath.resolve(slug).resolve("images").resolve("characters").resolve(filename);
+        if (!Files.isRegularFile(imagePath)) {
+            throw new ResourceNotFoundException("Image not found: " + filename);
+        }
+
+        try {
+            Resource resource = new UrlResource(imagePath.toUri());
+            String contentType = Files.probeContentType(imagePath);
+            if (contentType == null) contentType = "application/octet-stream";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .cacheControl(CacheControl.maxAge(7, TimeUnit.DAYS))
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Failed to serve image: " + filename, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to determine content type for: " + filename, e);
+        }
+    }
+
     public List<ExportCharacter> parseCharacters(String slug) {
         validateSlug(slug);
         Path file = campaignsPath.resolve(slug).resolve("characters.md");
@@ -138,36 +174,68 @@ public class CampaignService {
 
         try {
             String content = Files.readString(file);
-            // Only parse the Player Characters section
-            int pcStart = content.indexOf("## Player Characters");
-            if (pcStart < 0) return List.of();
-
-            // Find end of PC section (next ## heading or end of file)
-            int pcEnd = content.indexOf("\n## ", pcStart + 1);
-            if (pcEnd < 0) pcEnd = content.length();
-            String pcSection = content.substring(pcStart, pcEnd);
-
             List<ExportCharacter> characters = new ArrayList<>();
-            Matcher headingMatcher = CHARACTER_HEADING.matcher(pcSection);
 
-            while (headingMatcher.find()) {
-                String name = headingMatcher.group(1).trim();
-                // Strip parenthetical nicknames: "Kaiya Gemflower (called "Kaiya Lightspear")" -> "Kaiya Gemflower"
-                int parenIdx = name.indexOf('(');
-                if (parenIdx > 0) {
-                    name = name.substring(0, parenIdx).trim();
+            // Parse Player Characters section
+            int pcStart = content.indexOf("## Player Characters");
+            if (pcStart >= 0) {
+                int pcEnd = content.indexOf("\n## ", pcStart + 1);
+                if (pcEnd < 0) pcEnd = content.length();
+                String pcSection = content.substring(pcStart, pcEnd);
+
+                Matcher headingMatcher = CHARACTER_HEADING.matcher(pcSection);
+
+                while (headingMatcher.find()) {
+                    String name = headingMatcher.group(1).trim();
+                    // Strip parenthetical nicknames: "Kaiya Gemflower (called "Kaiya Lightspear")" -> "Kaiya Gemflower"
+                    int parenIdx = name.indexOf('(');
+                    if (parenIdx > 0) {
+                        name = name.substring(0, parenIdx).trim();
+                    }
+
+                    int blockStart = headingMatcher.end();
+                    int blockEnd = pcSection.indexOf("\n### ", blockStart);
+                    if (blockEnd < 0) blockEnd = pcSection.length();
+                    String block = pcSection.substring(blockStart, blockEnd);
+
+                    String raceClass = extractField(block, RACE_CLASS_PATTERN);
+                    String background = extractField(block, BACKGROUND_PATTERN);
+                    String imageUrl = findCharacterImageUrl(slug, name);
+
+                    characters.add(new ExportCharacter(name, "Unknown", raceClass, background, imageUrl));
                 }
+            }
 
-                // Find the block of text for this character (until next ### or end)
-                int blockStart = headingMatcher.end();
-                int blockEnd = pcSection.indexOf("\n### ", blockStart);
-                if (blockEnd < 0) blockEnd = pcSection.length();
-                String block = pcSection.substring(blockStart, blockEnd);
+            // Parse Notable NPCs section
+            int npcStart = content.indexOf("## Notable NPCs");
+            if (npcStart >= 0) {
+                int npcEnd = content.indexOf("\n## ", npcStart + 1);
+                if (npcEnd < 0) npcEnd = content.length();
+                String npcSection = content.substring(npcStart, npcEnd);
 
-                String raceClass = extractField(block, RACE_CLASS_PATTERN);
-                String background = extractField(block, BACKGROUND_PATTERN);
+                Matcher headingMatcher = CHARACTER_HEADING.matcher(npcSection);
 
-                characters.add(new ExportCharacter(name, "Unknown", raceClass, background));
+                while (headingMatcher.find()) {
+                    String name = headingMatcher.group(1).trim();
+
+                    int blockStart = headingMatcher.end();
+                    int blockEnd = npcSection.indexOf("\n### ", blockStart);
+                    if (blockEnd < 0) blockEnd = npcSection.length();
+                    String block = npcSection.substring(blockStart, blockEnd);
+
+                    // Collect bullet lines as description
+                    StringBuilder desc = new StringBuilder();
+                    for (String line : block.split("\n")) {
+                        line = line.trim();
+                        if (line.startsWith("- ")) {
+                            if (desc.length() > 0) desc.append(" ");
+                            desc.append(line.substring(2).trim());
+                        }
+                    }
+
+                    String imageUrl = findCharacterImageUrl(slug, name);
+                    characters.add(new ExportCharacter(name, null, null, desc.toString(), imageUrl));
+                }
             }
 
             return characters;
@@ -279,6 +347,28 @@ public class CampaignService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to write overview for: " + slug, e);
         }
+    }
+
+    private String findCharacterImageUrl(String slug, String name) {
+        Path imagesDir = campaignsPath.resolve(slug).resolve("images").resolve("characters");
+        if (!Files.isDirectory(imagesDir)) return null;
+
+        String normalized = name.toLowerCase().replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(imagesDir)) {
+            for (Path file : stream) {
+                String filename = file.getFileName().toString();
+                if (!IMAGE_FILENAME_PATTERN.matcher(filename).matches()) continue;
+                String baseName = filename.substring(0, filename.lastIndexOf('.'));
+                if (baseName.equals(normalized) || normalized.contains(baseName) || baseName.contains(normalized)) {
+                    return bookshelfUrl + "/api/campaigns/" + slug + "/images/characters/" + filename;
+                }
+            }
+        } catch (IOException e) {
+            // Non-fatal
+        }
+        return null;
     }
 
     private void validateSlug(String slug) {

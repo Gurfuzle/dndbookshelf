@@ -2,6 +2,8 @@ package com.dndstorybook.controller;
 
 import com.dndstorybook.dto.*;
 import com.dndstorybook.service.CampaignService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,5 +52,10 @@ public class CampaignController {
     public CampaignOverview updateOverview(@PathVariable String slug, @RequestBody OverviewUpdateRequest request) {
         campaignService.updateOverview(slug, request);
         return campaignService.getOverview(slug);
+    }
+
+    @GetMapping("/{slug}/images/characters/{filename}")
+    public ResponseEntity<Resource> getCharacterImage(@PathVariable String slug, @PathVariable String filename) {
+        return campaignService.getCharacterImage(slug, filename);
     }
 }

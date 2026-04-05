@@ -180,7 +180,26 @@ For each new chapter file you wrote (e.g., `chapter-03-the-escape.md`), create a
   "npcsPresent": ["The Woman in Purple"],
   "notableEvents": ["Event one", "Event two"],
   "items": ["Ring of Elementals (Doom, inactive)"],
-  "cliffhanger": "One-sentence ending hook."
+  "cliffhanger": "One-sentence ending hook.",
+  "characterNotes": {
+    "Doom": {
+      "characterName": "Doom",
+      "summary": "One-sentence summary of what this character did.",
+      "keyActions": ["Led the escape attempt"],
+      "characterDevelopment": ["Showed leadership under pressure"],
+      "itemChanges": [],
+      "relationshipChanges": ["Earned Kaiya's trust"],
+      "privateKnowledge": ["Noticed a hidden passage the others missed"]
+    }
+  },
+  "dmNotes": {
+    "whatWorkedWell": ["The tension of the escape sequence"],
+    "whatDidntWork": ["The guard patrol felt too predictable"],
+    "playerEngagement": ["Both players were fully invested"],
+    "plotHooksPlanted": ["The hidden passage leads somewhere unknown"],
+    "rulesNotes": ["Stealth contested checks worked smoothly"],
+    "rememberNextSession": ["Guards are now on high alert"]
+  }
 }
 ```
 
@@ -193,6 +212,10 @@ For each new chapter file you wrote (e.g., `chapter-03-the-escape.md`), create a
 - **notableEvents**: Key events and encounters.
 - **items**: Notable items with owners.
 - **cliffhanger**: The chapter's ending hook.
+- **characterNotes**: Object keyed by character name, one entry per character in `charactersPresent`. Each entry has: `characterName`, `summary`, `keyActions`, `characterDevelopment`, `itemChanges`, `relationshipChanges`, `privateKnowledge`.
+- **dmNotes**: DM reflections with: `whatWorkedWell`, `whatDidntWork`, `playerEngagement`, `plotHooksPlanted`, `rulesNotes`, `rememberNextSession`.
+
+Since the novelify command has access to the raw transcript, use it to generate especially rich DM notes and character-specific observations. The transcript reveals player engagement, table dynamics, and moments that the novelized chapter may have smoothed over — capture those insights in the notes.
 
 ## Step 8: Report to the User
 
