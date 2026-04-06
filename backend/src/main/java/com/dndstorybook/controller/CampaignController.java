@@ -58,4 +58,9 @@ public class CampaignController {
     public ResponseEntity<Resource> getCharacterImage(@PathVariable String slug, @PathVariable String filename) {
         return campaignService.getCharacterImage(slug, filename);
     }
+
+    @GetMapping("/{slug}/images/chapters/{filename}")
+    public ResponseEntity<Resource> getChapterImage(@PathVariable String slug, @PathVariable String filename) {
+        return campaignService.getChapterImage(slug, filename);
+    }
 }

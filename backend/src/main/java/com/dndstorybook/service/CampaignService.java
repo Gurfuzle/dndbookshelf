@@ -139,12 +139,20 @@ public class CampaignService {
     }
 
     public ResponseEntity<Resource> getCharacterImage(String slug, String filename) {
+        return serveImage(slug, "characters", filename);
+    }
+
+    public ResponseEntity<Resource> getChapterImage(String slug, String filename) {
+        return serveImage(slug, "chapters", filename);
+    }
+
+    private ResponseEntity<Resource> serveImage(String slug, String subdir, String filename) {
         validateSlug(slug);
         if (filename == null || !IMAGE_FILENAME_PATTERN.matcher(filename).matches()) {
             throw new IllegalArgumentException("Invalid image filename: " + filename);
         }
 
-        Path imagePath = campaignsPath.resolve(slug).resolve("images").resolve("characters").resolve(filename);
+        Path imagePath = campaignsPath.resolve(slug).resolve("images").resolve(subdir).resolve(filename);
         if (!Files.isRegularFile(imagePath)) {
             throw new ResourceNotFoundException("Image not found: " + filename);
         }
