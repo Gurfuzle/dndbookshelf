@@ -143,10 +143,10 @@ export default function CampaignReaderPage() {
         />
       )}
 
-      {/* Book reader main area */}
-      <main className="flex-1 p-2 md:p-4 min-h-0 flex flex-col">
+      {/* Book reader main area — scrollable */}
+      <main className="flex-1 overflow-y-auto min-h-0">
         {loading ? (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="h-full flex items-center justify-center">
             <p className="text-parchment-dark text-lg">Loading...</p>
           </div>
         ) : (

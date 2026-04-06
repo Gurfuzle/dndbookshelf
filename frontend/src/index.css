@@ -77,15 +77,72 @@ body {
 }
 
 .book-scroll::-webkit-scrollbar-track {
-  background: var(--color-parchment-dark);
+  background: transparent;
   border-radius: 5px;
 }
 
 .book-scroll::-webkit-scrollbar-thumb {
   background: var(--color-leather-light);
   border-radius: 5px;
+  opacity: 0.6;
 }
 
 .book-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--color-leather);
+}
+
+/* Book reader with image background */
+.book-reader-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-reader-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: linear-gradient(to bottom, rgba(61, 58, 54, 0.9), rgba(61, 58, 54, 0.6) 70%, transparent);
+}
+
+.book-reader-image-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.book-reader-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Text overlay positioned on the blank page area of the book image */
+.book-reader-text-area {
+  position: absolute;
+  /* These percentages align with the blank page in the book image */
+  top: 9%;
+  left: 15%;
+  width: 72%;
+  height: 82%;
+  overflow-y: auto;
+  padding: 2% 3%;
+  background: transparent;
+}
+
+/* On smaller screens, adjust text area positioning */
+@media (max-width: 768px) {
+  .book-reader-text-area {
+    top: 8%;
+    left: 13%;
+    width: 76%;
+    height: 84%;
+    padding: 1.5% 2%;
+  }
 }
