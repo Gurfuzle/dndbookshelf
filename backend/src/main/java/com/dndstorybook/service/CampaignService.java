@@ -355,9 +355,6 @@ public class CampaignService {
 
         String normalized = name.toLowerCase().replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("^-|-$", "");
-        // Extract individual words for partial matching (e.g. "kaiya" from "kaiya-gemflower")
-        String[] nameWords = normalized.split("-");
-        String firstName = nameWords.length > 0 ? nameWords[0] : normalized;
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(imagesDir)) {
             for (Path file : stream) {
@@ -365,10 +362,6 @@ public class CampaignService {
                 if (!IMAGE_FILENAME_PATTERN.matcher(filename).matches()) continue;
                 String baseName = filename.substring(0, filename.lastIndexOf('.'));
                 if (baseName.equals(normalized) || normalized.contains(baseName) || baseName.contains(normalized)) {
-                    return bookshelfUrl + "/api/campaigns/" + slug + "/images/characters/" + filename;
-                }
-                // Match by first name for cases like "kaiya-gemflower" vs "kaiya-lightspear"
-                if (firstName.length() >= 4 && baseName.startsWith(firstName + "-")) {
                     return bookshelfUrl + "/api/campaigns/" + slug + "/images/characters/" + filename;
                 }
             }
