@@ -291,8 +291,11 @@ public class CampaignService {
             sessions.add(new ExportSession(ch.filename(), ch.title(), ch.sessionDate(), notes));
         }
 
+        // Read campaign overview notes if available
+        java.util.Map<String, Object> campaignOverview = readCampaignOverview(slug);
+
         String campaignUrl = bookshelfUrl + "/campaign/" + slug;
-        return new CampaignExport(slug, title, description, "Tyranny of Dragons", campaignUrl, characters, sessions);
+        return new CampaignExport(slug, title, description, "Tyranny of Dragons", campaignUrl, characters, sessions, campaignOverview);
     }
 
     public CampaignOverview getOverview(String slug) {
@@ -354,6 +357,19 @@ public class CampaignService {
             Files.writeString(overviewFile, sb.toString());
         } catch (IOException e) {
             throw new RuntimeException("Failed to write overview for: " + slug, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private java.util.Map<String, Object> readCampaignOverview(String slug) {
+        Path overviewFile = campaignsPath.resolve(slug).resolve("notes").resolve("campaign-overview.json");
+        if (!Files.isRegularFile(overviewFile)) {
+            return null;
+        }
+        try {
+            return objectMapper.readValue(overviewFile.toFile(), java.util.Map.class);
+        } catch (IOException e) {
+            return null;
         }
     }
 

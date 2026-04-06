@@ -9,5 +9,6 @@ public record CampaignExport(
         String sourceBook,
         String bookshelfUrl,
         List<ExportCharacter> characters,
-        List<ExportSession> sessions
+        List<ExportSession> sessions,
+        java.util.Map<String, Object> campaignOverview
 ) {}

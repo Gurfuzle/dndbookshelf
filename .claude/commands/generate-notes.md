@@ -109,7 +109,7 @@ Each notes file must follow this exact structure:
 - DM notes should be honest and reflective. They are for the DM's eyes only.
 - For the preface, DM notes can focus on session-zero observations (character dynamics, player interests, what hooks excited them).
 
-## Step 4: Save Notes
+## Step 4: Save Chapter Notes
 
 Write each JSON file to `campaigns/<campaign-slug>/notes/<chapter-name>.json`.
 
@@ -117,9 +117,78 @@ For example:
 - `chapters/preface-the-adventurers.md` → `notes/preface-the-adventurers.json`
 - `chapters/chapter-01-ambush-in-the-forest.md` → `notes/chapter-01-ambush-in-the-forest.json`
 
-## Step 5: Report
+## Step 5: Generate Campaign Overview
+
+After generating all per-chapter notes, synthesize them into a single `campaign-overview.json` file that captures the overarching story across all sessions. This is a campaign-level note (not tied to any session).
+
+Read ALL the chapter notes you just generated and produce:
+
+```json
+{
+  "title": "Campaign Overview",
+  "keyCharacters": [
+    {
+      "name": "Character Name",
+      "type": "PC or NPC",
+      "description": "Brief description — race/class, role in the story, and current status."
+    }
+  ],
+  "storyArcs": [
+    {
+      "name": "Arc Name",
+      "description": "Summary of this plot thread — where it started, key developments, and current state.",
+      "sessions": ["Chapter One: ...", "Chapter Three: ..."]
+    }
+  ],
+  "keyItems": [
+    {
+      "name": "Item Name",
+      "holder": "Current holder or 'Unknown'",
+      "significance": "Why this item matters to the story."
+    }
+  ],
+  "keyEvents": [
+    "Pivotal moment #1 — brief description and which session it occurred in.",
+    "Pivotal moment #2 — brief description and which session it occurred in."
+  ],
+  "unresolvedThreads": [
+    "Open plot hook or mystery #1",
+    "Open plot hook or mystery #2"
+  ],
+  "relationshipMap": [
+    {
+      "parties": ["Character A", "Character B"],
+      "nature": "Alliance, rivalry, mentorship, romance, etc.",
+      "notes": "Brief description of how this relationship has evolved."
+    }
+  ]
+}
+```
+
+### Campaign Overview Field Definitions
+
+- **title**: Always "Campaign Overview".
+- **keyCharacters**: All recurring PCs and significant NPCs. Include every PC and any NPC who appears in 2+ sessions or drives a major plot point.
+- **storyArcs**: Major plot threads that span multiple sessions. Trace each arc from its introduction through its developments. Include which sessions are relevant.
+- **keyItems**: Significant items that affect the narrative — magical items, quest objects, keys, etc. Track who currently holds them.
+- **keyEvents**: Pivotal moments that changed the course of the campaign. These are the "turning points" a DM would want to reference.
+- **unresolvedThreads**: Open plot hooks, unanswered mysteries, escaped villains, unfulfilled promises — anything the DM should remember as active.
+- **relationshipMap**: Notable alliances, rivalries, and evolving dynamics between characters (PC-PC, PC-NPC, or NPC-NPC if relevant to the party).
+
+### Campaign Overview Guidelines
+
+- Synthesize across ALL chapters — this is a bird's-eye view, not a per-session recap.
+- Keep descriptions concise but informative enough to jog a DM's memory.
+- For story arcs, focus on the narrative thread rather than individual session details.
+- Unresolved threads should be actionable — things the DM might pick up in future sessions.
+- Only include relationships that have narrative weight (not every casual interaction).
+
+Save to `campaigns/<campaign-slug>/notes/campaign-overview.json`.
+
+## Step 6: Report
 
 After generating all notes, report:
-- How many notes files were generated.
+- How many chapter notes files were generated.
+- Whether the campaign overview was generated.
 - The file paths where they were saved.
 - A brief summary of each chapter's notes (title + summary field).
