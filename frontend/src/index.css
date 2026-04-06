@@ -127,10 +127,10 @@ body {
 .book-reader-text-area {
   position: absolute;
   /* These percentages align with the blank page in the book image */
-  top: 15%;
+  top: 20%;
   left: 17%;
   width: 60%;
-  height: 68%;
+  height: 60%;
   overflow-y: auto;
   padding: 2% 3%;
   background: transparent;
@@ -139,10 +139,10 @@ body {
 /* On smaller screens, adjust text area positioning */
 @media (max-width: 768px) {
   .book-reader-text-area {
-    top: 14%;
+    top: 19%;
     left: 15%;
     width: 64%;
-    height: 70%;
+    height: 62%;
     padding: 1.5% 2%;
   }
 }
